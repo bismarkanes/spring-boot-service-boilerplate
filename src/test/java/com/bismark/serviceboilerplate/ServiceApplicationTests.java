@@ -1,10 +1,10 @@
-package com.bismark.basic_spring_security;
+package com.bismark.serviceboilerplate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BasicSpringSecurityApplicationTests {
+class ServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
