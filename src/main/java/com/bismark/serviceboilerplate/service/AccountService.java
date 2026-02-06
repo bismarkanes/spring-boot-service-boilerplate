@@ -26,7 +26,7 @@ public class AccountService {
         return UserDetailDto.mapFromUserDetail(uds.get(0));
     }
 
-    @PreAuthorize("hasRole('ADMIN'")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDetailDto createOrUpdateAccount(long id, UserDetailDto userDetailDto) {
         UserDetail userDetail;
 
