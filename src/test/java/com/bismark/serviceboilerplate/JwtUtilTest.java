@@ -3,6 +3,7 @@ package com.bismark.serviceboilerplate;
 import com.bismark.serviceboilerplate.Entity.UserDetail;
 import com.bismark.serviceboilerplate.dto.JwtAccessTokenDto;
 import com.bismark.serviceboilerplate.utils.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.WeakKeyException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,8 +52,8 @@ public class JwtUtilTest {
         Assertions.assertEquals("bismark", JwtUtil.verifyToken(token, validSecret));
         Assertions.assertNull(JwtUtil.verifyToken(null, validSecret));
         Assertions.assertNull(JwtUtil.verifyToken("", validSecret));
-        Assertions.assertNull(JwtUtil.verifyToken(token, validSecret + "."));
-        Assertions.assertNull(JwtUtil.verifyToken(token, emptySecret));
+        Assertions.assertThrows(JwtException.class, () -> JwtUtil.verifyToken(token, validSecret + "."));
+        Assertions.assertThrows(JwtException.class, () -> JwtUtil.verifyToken(token, emptySecret));
     }
 
     @Test
