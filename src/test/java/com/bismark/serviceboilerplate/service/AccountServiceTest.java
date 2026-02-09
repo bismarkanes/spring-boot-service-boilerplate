@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
@@ -18,6 +19,10 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
+@TestPropertySource(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb",
+        "spring.datasource.driverClassName=org.h2.Driver"
+})
 public class AccountServiceTest {
     @MockitoBean
     UserDetailRepository userDetailRepository;
