@@ -37,17 +37,9 @@ public class JwtUtil {
         return new JwtAccessTokenDto(token, expiredDate);
     }
 
-    public static String verifyToken(String token, String secret) {
-        String content;
+    public static String verifyToken(String token, String secret) throws JwtException {
         if (token == null || token.isEmpty()) return null;
 
-        try {
-            content = Jwts.parser().verifyWith(getSecretKey(secret)).build().parseSignedClaims(token).getPayload().getSubject();
-        } catch (JwtException ex) {
-            System.out.println(ex.toString());
-            return null;
-        }
-
-        return content;
+        return Jwts.parser().verifyWith(getSecretKey(secret)).build().parseSignedClaims(token).getPayload().getSubject();
     }
 }

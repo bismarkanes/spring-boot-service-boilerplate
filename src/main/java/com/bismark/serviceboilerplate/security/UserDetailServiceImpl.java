@@ -2,6 +2,8 @@ package com.bismark.serviceboilerplate.security;
 
 import com.bismark.serviceboilerplate.Entity.UserDetail;
 import com.bismark.serviceboilerplate.repository.UserDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.User;
@@ -17,6 +19,8 @@ import java.util.List;
 // create component that implements UserDetailsService
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
+    private static final Logger logger = LoggerFactory.getLogger(UserDetailServiceImpl.class);
+
     @Autowired
     private UserDetailRepository userDetailRepository;
 
@@ -24,7 +28,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("loadUserByUsername username = " + username);
+        logger.info("loadUserByUsername username = " + username);
         if (isSimulated) {
             return User.withUsername("user").password("{noop}password").roles("user").build();
         }

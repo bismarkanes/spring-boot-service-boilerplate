@@ -1,10 +1,13 @@
 package com.bismark.serviceboilerplate.security;
 
 import com.bismark.serviceboilerplate.utils.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,8 @@ import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -45,9 +50,13 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             String token = sList.get(1);
-            String username;
+            String username = "";
 
-            username = JwtUtil.verifyToken(token, jwtSecret);
+            try {
+                username = JwtUtil.verifyToken(token, jwtSecret);
+            } catch (JwtException exception) {
+                logger.error("JwtFilter Error", exception);
+            }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailservice.loadUserByUsername(username);
