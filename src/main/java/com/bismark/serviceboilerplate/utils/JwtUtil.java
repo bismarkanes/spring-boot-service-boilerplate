@@ -13,8 +13,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class JwtUtil {
-    private static SecretKey getSecretKey () {
-        String secret = System.getenv("JWT_SECRET_KEY");
+    private static SecretKey getSecretKey (String secret) {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -23,26 +22,27 @@ public class JwtUtil {
         return Constants.DEFAULT_TOKEN_EXPIRE_MINUTES;
     }
 
-    public static String generateToken(UserDetails userDetail, Date expireTime) {
+    public static String generateToken(UserDetails userDetail, Date expireTime, String secret) {
         return Jwts.builder()
                 .subject(userDetail.getUsername())
                 .expiration(expireTime)
-                .signWith(getSecretKey())
+                .signWith(getSecretKey(secret))
                 .compact();
     }
 
-    public static JwtAccessTokenDto generateAccessToken(UserDetails userDetail) {
+    public static JwtAccessTokenDto generateAccessToken(UserDetails userDetail, String secret) {
         LocalDateTime expireDateTime = LocalDateTime.now().plusMinutes(JwtUtil.GetDefaultTokenExpireMinutes());
         Date expiredDate = Date.from(expireDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        String token = generateToken(userDetail, expiredDate);
+        String token = generateToken(userDetail, expiredDate, secret);
         return new JwtAccessTokenDto(token, expiredDate);
     }
 
-    public static String verifyToken(String token) {
+    public static String verifyToken(String token, String secret) {
         String content;
+        if (token == null || token.isEmpty()) return null;
 
         try {
-            content = Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload().getSubject();
+            content = Jwts.parser().verifyWith(getSecretKey(secret)).build().parseSignedClaims(token).getPayload().getSubject();
         } catch (JwtException ex) {
             System.out.println(ex.toString());
             return null;

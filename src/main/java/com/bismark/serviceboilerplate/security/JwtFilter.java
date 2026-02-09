@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,9 @@ import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
     @Autowired
     private UserDetailServiceImpl userDetailservice;
 
@@ -31,19 +36,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
             List<String> sList = Arrays.asList(authValue.split(" "));
             if (sList.size() < 2) {
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
                 return;
             }
-            if (!sList.get(0).equals("Bearer")) {
-                return;
-            }
-            if (sList.get(1) == null) {
+            if (!sList.get(0).equals("Bearer") || sList.get(1) == null || sList.get(1).isEmpty()) {
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
                 return;
             }
 
             String token = sList.get(1);
             String username;
 
-            username = JwtUtil.verifyToken(token);
+            username = JwtUtil.verifyToken(token, jwtSecret);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailservice.loadUserByUsername(username);
