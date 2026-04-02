@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.bismark</groupId>
-    <artifactId>basic_spring_security</artifactId>
+    <artifactId>spring-boot-service-boilerplate</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>basic_spring_security</name>
+    <name>spring-boot-service</name>
     <description>Demo spring security</description>
     <url/>
     <licenses>
