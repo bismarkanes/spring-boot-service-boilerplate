@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private ErrorDto buildError(Exception exception) {
-        String errorCode = "errUnknown";
+        String errorCode = exception.getClass().getName();
         String errorMessage = "Unknown error";
         if (exception.getClass() == UpdateUsernameException.class) {
             errorCode = "ErrUpdateUsername";
