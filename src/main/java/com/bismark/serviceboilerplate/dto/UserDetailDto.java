@@ -1,5 +1,6 @@
 package com.bismark.serviceboilerplate.dto;
 
+import com.bismark.serviceboilerplate.Entity.Role;
 import com.bismark.serviceboilerplate.Entity.UserDetail;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -7,6 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -24,6 +30,7 @@ public class UserDetailDto {
     private String firstname;
     private String lastname;
     private Boolean active;
+    private Set<String> roles;
 
     /* Update relevant field from entity */
     public static UserDetailDto mapFromUserDetail(UserDetail userDetail) {
@@ -37,7 +44,9 @@ public class UserDetailDto {
                 .profileUrl(userDetail.getProfileUrl())
                 .firstname(userDetail.getFirstname())
                 .lastname(userDetail.getLastname())
-                .active(userDetail.getActive()).build();
+                .active(userDetail.getActive())
+                .roles(userDetail.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
+                .build();
     }
 
     public void mapToUserDetail(UserDetail userDetail) {
@@ -49,5 +58,20 @@ public class UserDetailDto {
         userDetail.setProfileUrl(profileUrl);
         userDetail.setFirstname(firstname);
         userDetail.setLastname(lastname);
+
+        if (roles != null) {
+            if (userDetail.getRoles().isEmpty()) {
+                roles.forEach(role -> {
+                    userDetail.getRoles().add(Role.builder().name(role).build());
+                });
+            } else {
+                Map<String, Role> mapRoles = new HashMap<>();
+                userDetail.getRoles().forEach(role -> {
+                    mapRoles.put(role.getName(), role);
+                });
+
+                userDetail.setRoles(roles.stream().filter(role -> mapRoles.get(role) != null).map(mapRoles::get).collect(Collectors.toSet()));
+            }
+        }
     }
 }

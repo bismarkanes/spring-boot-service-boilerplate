@@ -1,5 +1,6 @@
 package com.bismark.serviceboilerplate.service;
 
+import com.bismark.serviceboilerplate.Entity.Role;
 import com.bismark.serviceboilerplate.Entity.UserDetail;
 import com.bismark.serviceboilerplate.dto.UserDetailDto;
 import com.bismark.serviceboilerplate.error.UpdateUserException;
@@ -15,6 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,16 +32,37 @@ public class AccountServiceTest {
     @Autowired
     AccountService accountService;
 
+    private UserDetail createAccountDetail(String aUsername, List<Role> roles) {
+        UserDetail ud = new UserDetail();
+        ud.setUsername(aUsername);
+        if (roles != null)
+            ud.setRoles(new HashSet<>(roles));
+
+        return ud;
+    }
+
     @Test
     void getAccountDetailValidTest() throws Exception {
         final String username = "bismark";
-        UserDetail ud = new UserDetail();
-        ud.setUsername(username);
         List<UserDetail> uds = new ArrayList<>();
-        uds.add(ud);
+        uds.add(createAccountDetail(username, null));
         Mockito.when(userDetailRepository.findByUsername(username)).thenReturn(uds);
         UserDetailDto userDetailDto = accountService.getAccountDetail(username);
         Assertions.assertEquals(username, userDetailDto.getUsername());
+    }
+
+    @Test
+    void getAccountDetailWithRoleValidTest() throws Exception {
+        final String USERNAME = "tobby";
+        final String ROLE_STR = "ROLE_MANAGER";
+        Role role = Role.builder().name(ROLE_STR).build();
+
+        List<UserDetail> uds = new ArrayList<>();
+        uds.add(createAccountDetail(USERNAME, List.of(role)));
+        Mockito.when(userDetailRepository.findByUsername(USERNAME)).thenReturn(uds);
+        UserDetailDto userDetailDto = accountService.getAccountDetail(USERNAME);
+        Assertions.assertEquals(USERNAME, userDetailDto.getUsername());
+        Assertions.assertTrue(userDetailDto.getRoles().contains(ROLE_STR));
     }
 
     @Test
